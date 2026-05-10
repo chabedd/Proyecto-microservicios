@@ -1,0 +1,10 @@
+server: 
+  port: 8082
+
+spring:
+  datasource:
+    # Aquí especificamos el esquema en la URL para este microservicio
+    url: jdbc:postgresql://${custom.database.host}:${custom.database.port}/${custom.database.name}?currentSchema=inventario_schema
+  flyway:
+    schemas: inventario_schema
+    default-schema: inventario_schema

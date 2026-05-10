@@ -1,0 +1,10 @@
+server: 
+  port: 8085
+
+spring:
+  datasource:
+    # Aquí especificamos el esquema en la URL para este microservicio
+    url: jdbc:postgresql://${custom.database.host}:${custom.database.port}/${custom.database.name}?currentSchema=movimiento_schema
+  flyway:
+    schemas: movimiento_schema
+    default-schema: movimiento_schema

@@ -1,0 +1,10 @@
+server:  
+  port: 8083
+
+spring:
+  datasource:
+    # Aquí especificamos el esquema en la URL para este microservicio
+    url: jdbc:postgresql://${custom.database.host}:${custom.database.port}/${custom.database.name}?currentSchema=bodega_schema
+  flyway:
+    schemas: bodega_schema
+    default-schema: bodega_schema

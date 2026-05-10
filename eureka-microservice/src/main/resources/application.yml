@@ -1,0 +1,10 @@
+server:
+    port: 8761
+
+spring:
+    application:
+        name: eureka-microservice
+    config:
+        import: "optional:configserver:http://localhost:8888"
+
+

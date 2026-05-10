@@ -1,0 +1,38 @@
+HELP.md
+# --- JAVA & MAVEN ---
+**/target/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# --- MAVEN WRAPPER (No necesario en el repo) ---
+.mvn/
+mvnw
+mvnw.cmd
+
+# --- IDEs (VS Code, IntelliJ, Eclipse) ---
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.factorypath
+.springBeans
+.sts4-cache
+.apt_generated/
+
+# --- SISTEMA OPERATIVO & LOGS ---
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- TEMPORALES ---
+temp/
+tmp/
