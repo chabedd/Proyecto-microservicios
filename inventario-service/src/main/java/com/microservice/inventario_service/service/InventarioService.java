@@ -58,4 +58,17 @@ public class InventarioService {
         return inventario.getStockActual() <= inventario.getPuntoReposicion();
     }
 
+    public Inventario ajustarStock(Long productoId, Long bodegaId, int delta) {
+        Inventario inventario = inventarioRepository.findByProductoIdAndBodegaId(productoId, bodegaId)
+                .orElseThrow(() -> new RuntimeException(
+                        "No existe inventario para el producto " + productoId + " en la bodega " + bodegaId));
+        int nuevoStock = inventario.getStockActual() + delta;
+        if (nuevoStock < 0) {
+            throw new RuntimeException("Stock insuficiente. Disponible: "
+                    + inventario.getStockActual() + ", ajuste solicitado: " + delta);
+        }
+        inventario.setStockActual(nuevoStock);
+        return inventarioRepository.save(inventario);
+    }
+
 }

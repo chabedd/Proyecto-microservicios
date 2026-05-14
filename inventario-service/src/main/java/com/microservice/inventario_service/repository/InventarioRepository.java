@@ -11,4 +11,5 @@ import com.microservice.inventario_service.model.Inventario;
 public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     List<Inventario> findByProductoId(Long productoId);
     List<Inventario> findByBodegaId(Long bodegaId);
+    Optional<Inventario> findByProductoIdAndBodegaId(Long productoId, Long bodegaId);
 }
