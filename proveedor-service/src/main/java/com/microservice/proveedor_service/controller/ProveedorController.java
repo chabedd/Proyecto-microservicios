@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.microservice.proveedor_service.model.Proveedor;
+import com.microservice.proveedor_service.dto.ProveedorRequestDTO;
+import com.microservice.proveedor_service.dto.ProveedorResponseDTO;
 import com.microservice.proveedor_service.service.ProveedorService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,41 +30,40 @@ public class ProveedorController {
     private final ProveedorService proveedorService;
 
     @PostMapping
-    public ResponseEntity<Proveedor> crearProveedor(@RequestBody Proveedor proveedor) {
-        Proveedor nuevoProveedor = proveedorService.crearProveedor(proveedor);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProveedor);
+    public ResponseEntity<ProveedorResponseDTO> crearProveedor(@Valid @RequestBody ProveedorRequestDTO proveedorRequest) {
+        ProveedorResponseDTO creado = proveedorService.crearProveedor(proveedorRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     @GetMapping
-    public ResponseEntity<List<Proveedor>> obtenerTodosProveedores() {
-        List<Proveedor> proveedores = proveedorService.obtenerTodosProveedores();
+    public ResponseEntity<List<ProveedorResponseDTO>> obtenerTodosProveedores() {
+        List<ProveedorResponseDTO> proveedores = proveedorService.obtenerTodosProveedores();
         return ResponseEntity.ok(proveedores);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Proveedor> obtenerProveedorPorId(@PathVariable Long id) {
-        Proveedor proveedor = proveedorService.obtenerProveedorPorId(id);
-        return ResponseEntity.ok(proveedor);
+    public ResponseEntity<ProveedorResponseDTO> obtenerProveedorPorId(@PathVariable Long id) {
+        ProveedorResponseDTO dto = proveedorService.obtenerProveedorPorId(id);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/activos/listar")
-    public ResponseEntity<List<Proveedor>> obtenerProveedoresActivos() {
-        List<Proveedor> proveedores = proveedorService.obtenerProveedoresActivos();
+    public ResponseEntity<List<ProveedorResponseDTO>> obtenerProveedoresActivos() {
+        List<ProveedorResponseDTO> proveedores = proveedorService.obtenerProveedoresActivos();
         return ResponseEntity.ok(proveedores);
     }
 
     @GetMapping("/rut/{rut}")
-    public ResponseEntity<Proveedor> obtenerProveedorPorRut(@PathVariable String rut) {
-        Optional<Proveedor> proveedor = proveedorService.obtenerProveedorPorRut(rut);
-        return proveedor.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ProveedorResponseDTO> obtenerProveedorPorRut(@PathVariable String rut) {
+        Optional<ProveedorResponseDTO> proveedor = proveedorService.obtenerProveedorPorRut(rut);
+        return proveedor.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Proveedor> actualizarProveedor(@PathVariable Long id,
-                                                         @RequestBody Proveedor proveedor) {
-        Proveedor proveedorActualizado = proveedorService.actualizarProveedor(id, proveedor);
-        return ResponseEntity.ok(proveedorActualizado);
+    public ResponseEntity<ProveedorResponseDTO> actualizarProveedor(@PathVariable Long id,
+                                                            @Valid @RequestBody ProveedorRequestDTO proveedorRequest) {
+        ProveedorResponseDTO actualizado = proveedorService.actualizarProveedor(id, proveedorRequest);
+        return ResponseEntity.ok(actualizado);
     }
 
     @PutMapping("/{id}/desactivar")
@@ -78,8 +79,8 @@ public class ProveedorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarProveedor(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarProveedor(@PathVariable Long id) {
         proveedorService.eliminarProveedor(id);
-        return ResponseEntity.ok("Proveedor eliminado exitosamente");
+        return ResponseEntity.noContent().build();
     }
 }

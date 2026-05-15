@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.microservice.inventario_service.dto.AjusteStockRequestDTO;
-import com.microservice.inventario_service.model.Inventario;
+import com.microservice.inventario_service.dto.InventarioRequestDTO;
+import com.microservice.inventario_service.dto.InventarioResponseDTO;
 import com.microservice.inventario_service.service.InventarioService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,32 +28,32 @@ public class InventarioController {
     private final InventarioService inventarioService;
 
     @PostMapping
-    public ResponseEntity<Inventario> crearInventario(@RequestBody Inventario inventario) {
-        Inventario nuevoInventario = inventarioService.crearInventario(inventario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoInventario);
+    public ResponseEntity<InventarioResponseDTO> crearInventario(@RequestBody InventarioRequestDTO requestDTO) {
+        InventarioResponseDTO responseDTO = inventarioService.crearInventario(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<Inventario>> obtenerTodosInventarios() {
-        List<Inventario> inventarios = inventarioService.obtenerTodosInventarios();
+    public ResponseEntity<List<InventarioResponseDTO>> obtenerTodosInventarios() {
+        List<InventarioResponseDTO> inventarios = inventarioService.obtenerTodosInventarios();
         return ResponseEntity.ok(inventarios);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Inventario> obtenerInventarioPorId(@PathVariable Long id) {
-        Inventario inventario = inventarioService.obtenerInventarioPorId(id);
+    public ResponseEntity<InventarioResponseDTO> obtenerInventarioPorId(@PathVariable Long id) {
+        InventarioResponseDTO inventario = inventarioService.obtenerInventarioPorId(id);
         return ResponseEntity.ok(inventario);
     }
 
     @GetMapping("/producto/{productoId}")
-    public ResponseEntity<List<Inventario>> obtenerInventariosPorProducto(@PathVariable Long productoId) {
-        List<Inventario> inventarios = inventarioService.obtenerInventariosPorProducto(productoId);
+    public ResponseEntity<List<InventarioResponseDTO>> obtenerInventariosPorProducto(@PathVariable Long productoId) {
+        List<InventarioResponseDTO> inventarios = inventarioService.obtenerInventariosPorProducto(productoId);
         return ResponseEntity.ok(inventarios);
     }
 
     @GetMapping("/bodega/{bodegaId}")
-    public ResponseEntity<List<Inventario>> obtenerInventariosPorBodega(@PathVariable Long bodegaId) {
-        List<Inventario> inventarios = inventarioService.obtenerInventariosPorBodega(bodegaId);
+    public ResponseEntity<List<InventarioResponseDTO>> obtenerInventariosPorBodega(@PathVariable Long bodegaId) {
+        List<InventarioResponseDTO> inventarios = inventarioService.obtenerInventariosPorBodega(bodegaId);
         return ResponseEntity.ok(inventarios);
     }
 
@@ -63,8 +64,8 @@ public class InventarioController {
     }
 
     @PatchMapping("/ajustar")
-    public ResponseEntity<Inventario> ajustarStock(@RequestBody AjusteStockRequestDTO dto) {
-        Inventario inventario = inventarioService.ajustarStock(dto.getProductoId(), dto.getBodegaId(), dto.getDelta());
+    public ResponseEntity<InventarioResponseDTO> ajustarStock(@RequestBody AjusteStockRequestDTO dto) {
+        InventarioResponseDTO inventario = inventarioService.ajustarStock(dto.getProductoId(), dto.getBodegaId(), dto.getDelta());
         return ResponseEntity.ok(inventario);
     }
 
