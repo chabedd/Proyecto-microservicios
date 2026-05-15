@@ -1,4 +1,3 @@
-
 package com.microservice.inventario_service.dto;
 
 import lombok.AllArgsConstructor;
