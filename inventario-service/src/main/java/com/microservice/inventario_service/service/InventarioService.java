@@ -1,74 +1,152 @@
 package com.microservice.inventario_service.service;
 
-import com.microservice.inventario_service.model.Inventario;
-import com.microservice.inventario_service.repository.InventarioRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.microservice.inventario_service.dto.InventarioRequestDTO;
+import com.microservice.inventario_service.dto.InventarioResponseDTO;
+import com.microservice.inventario_service.exception.ManejadorGlobal.InventarioNoEncontradoException;
+import com.microservice.inventario_service.exception.ManejadorGlobal.InventarioPersistenciaException;
+import com.microservice.inventario_service.mapper.InventarioMapper;
+import com.microservice.inventario_service.model.Inventario;
+import com.microservice.inventario_service.repository.InventarioRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class InventarioService {
 
     private final InventarioRepository inventarioRepository;
+    private final InventarioMapper inventarioMapper;
 
-    public Inventario crearInventario(Inventario inventario) {
-        return inventarioRepository.save(inventario);
+    public InventarioResponseDTO crearInventario(InventarioRequestDTO request) {
+        Inventario entidad = inventarioMapper.toEntity(request);
+        validarReglasStock(entidad.getStockActual(), entidad.getStockMinimo(), entidad.getStockMaximo(), entidad.getPuntoReposicion());
+        try {
+            Inventario saved = inventarioRepository.save(entidad);
+            log.info("Inventario creado id={} productoId={} bodegaId={}", saved.getId(), saved.getProductoId(), saved.getBodegaId());
+            return inventarioMapper.toResponseDTO(saved);
+        } catch (DataAccessException e) {
+            log.error("Error de acceso a datos al crear inventario: {}", e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos guardar el inventario. Por favor, intenta nuevamente en unos momentos.", e);
+        }
     }
 
     @Transactional(readOnly = true)
-    public Inventario obtenerInventarioPorId(Long id) {
-        return inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado con id: " + id));
+    public InventarioResponseDTO obtenerInventarioPorId(Long id) {
+        try {
+            Inventario inv = obtenerInventarioPorIdInterno(id);
+            return inventarioMapper.toResponseDTO(inv);
+        } catch (DataAccessException e) {
+            log.error("Error al obtener inventario id={}: {}", id, e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos cargar el inventario. Por favor, intenta nuevamente.", e);
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<Inventario> obtenerTodosInventarios() {
-        return inventarioRepository.findAll();
+    public List<InventarioResponseDTO> obtenerTodosInventarios() {
+        try {
+            List<Inventario> inventarios = inventarioRepository.findAll();
+            return inventarioMapper.toResponseDTOList(inventarios);
+        } catch (DataAccessException e) {
+            log.error("Error al obtener todos los inventarios: {}", e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos cargar la lista de inventarios. Por favor, intenta nuevamente.", e);
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<Inventario> obtenerInventariosPorProducto(Long productoId) {
-        return inventarioRepository.findByProductoId(productoId);
+    public List<InventarioResponseDTO> obtenerInventariosPorProducto(Long productoId) {
+        try {
+            List<Inventario> inventarios = inventarioRepository.findByProductoId(productoId);
+            return inventarioMapper.toResponseDTOList(inventarios);
+        } catch (DataAccessException e) {
+            log.error("Error al obtener inventarios por producto id={}: {}", productoId, e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos cargar los inventarios. Por favor, intenta nuevamente.", e);
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<Inventario> obtenerInventariosPorBodega(Long bodegaId) {
-        return inventarioRepository.findByBodegaId(bodegaId);
+    public List<InventarioResponseDTO> obtenerInventariosPorBodega(Long bodegaId) {
+        try {
+            List<Inventario> inventarios = inventarioRepository.findByBodegaId(bodegaId);
+            return inventarioMapper.toResponseDTOList(inventarios);
+        } catch (DataAccessException e) {
+            log.error("Error al obtener inventarios por bodega id={}: {}", bodegaId, e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos cargar los inventarios de la bodega. Por favor, intenta nuevamente.", e);
+        }
     }
 
-    public Inventario actualizarStock(Long id, int nuevoStock) {
-        Inventario inventario = obtenerInventarioPorId(id);
-        inventario.setStockActual(nuevoStock);
-        return inventarioRepository.save(inventario);
+    public InventarioResponseDTO actualizarStock(Long id, int nuevoStock) {
+        Inventario inventario = obtenerInventarioPorIdInterno(id);
+        validarReglasStock(nuevoStock, inventario.getStockMinimo(), inventario.getStockMaximo(), inventario.getPuntoReposicion());
+        try {
+            inventario.setStockActual(nuevoStock);
+            Inventario saved = inventarioRepository.save(inventario);
+            log.info("Stock actualizado inventarioId={} nuevoStock={}", id, nuevoStock);
+            return inventarioMapper.toResponseDTO(saved);
+        } catch (DataAccessException e) {
+            log.error("Error al actualizar stock id={}: {}", id, e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos actualizar el stock. Por favor, intenta nuevamente.", e);
+        }
     }
 
     public void eliminarInventario(Long id) {
-        if (!inventarioRepository.existsById(id)) {
-            throw new RuntimeException("Inventario no encontrado con id: " + id);
+        obtenerInventarioPorIdInterno(id);
+        try {
+            inventarioRepository.deleteById(id);
+            log.info("Inventario eliminado id={}", id);
+        } catch (DataAccessException e) {
+            log.error("Error al eliminar inventario id={}: {}", id, e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos eliminar el inventario. Por favor, intenta nuevamente.", e);
         }
-        inventarioRepository.deleteById(id);
     }
 
     public boolean necesitaReposicion(Long id) {
-        Inventario inventario = obtenerInventarioPorId(id);
+        Inventario inventario = obtenerInventarioPorIdInterno(id);
         return inventario.getStockActual() <= inventario.getPuntoReposicion();
     }
 
-    public Inventario ajustarStock(Long productoId, Long bodegaId, int delta) {
+    public InventarioResponseDTO ajustarStock(Long productoId, Long bodegaId, int delta) {
         Inventario inventario = inventarioRepository.findByProductoIdAndBodegaId(productoId, bodegaId)
-                .orElseThrow(() -> new RuntimeException(
-                        "No existe inventario para el producto " + productoId + " en la bodega " + bodegaId));
+                .orElseThrow(() -> new InventarioNoEncontradoException("Inventario no encontrado para productoId: " + productoId + " y bodegaId: " + bodegaId));
+
         int nuevoStock = inventario.getStockActual() + delta;
-        if (nuevoStock < 0) {
-            throw new RuntimeException("Stock insuficiente. Disponible: "
-                    + inventario.getStockActual() + ", ajuste solicitado: " + delta);
+        validarReglasStock(nuevoStock, inventario.getStockMinimo(), inventario.getStockMaximo(), inventario.getPuntoReposicion());
+
+        try {
+            inventario.setStockActual(nuevoStock);
+            Inventario saved = inventarioRepository.save(inventario);
+            log.info("Ajuste de stock productoId={} bodegaId={} delta={} nuevoStock={}", productoId, bodegaId, delta, saved.getStockActual());
+            return inventarioMapper.toResponseDTO(saved);
+        } catch (DataAccessException e) {
+            log.error("Error al ajustar stock productoId={} bodegaId={}: {}", productoId, bodegaId, e.getMessage());
+            throw new InventarioPersistenciaException("No pudimos ajustar el stock. Por favor, intenta nuevamente.", e);
         }
-        inventario.setStockActual(nuevoStock);
-        return inventarioRepository.save(inventario);
     }
 
+    private void validarReglasStock(int stockActual, int stockMinimo, int stockMaximo, int puntoReposicion) {
+        if (stockMinimo > stockMaximo) {
+            throw new IllegalArgumentException("El stock mínimo no puede ser mayor que el stock máximo.");
+        }
+        if (stockActual > stockMaximo) {
+            throw new IllegalArgumentException("El stock actual no puede superar el stock máximo (" + stockMaximo + ").");
+        }
+        if (puntoReposicion < stockMinimo || puntoReposicion > stockMaximo) {
+            throw new IllegalArgumentException("El punto de reposición debe estar entre el stock mínimo (" + stockMinimo + ") y el máximo (" + stockMaximo + ").");
+        }
+    }
+    /**
+     * Método privado para obtener entidad por ID (uso interno del servicio)
+     */
+    private Inventario obtenerInventarioPorIdInterno(Long id) {
+        return inventarioRepository.findById(id)
+                .orElseThrow(() -> new InventarioNoEncontradoException("Inventario no encontrado con id: " + id));
+    }
 }
