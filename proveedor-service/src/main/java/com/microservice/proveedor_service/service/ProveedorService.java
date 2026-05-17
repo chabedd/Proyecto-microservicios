@@ -84,6 +84,7 @@ public class ProveedorService {
                 .orElseThrow(() -> new ProveedorNoEncontradoException(obtenerMensajeErrorProveedor(id)));
 
         proveedor.setNombre(proveedorRequest.getNombre());
+        proveedor.setRut(proveedorRequest.getRut());
         proveedor.setEmail(proveedorRequest.getEmail());
         proveedor.setTelefono(proveedorRequest.getTelefono());
         proveedor.setDireccion(proveedorRequest.getDireccion());
