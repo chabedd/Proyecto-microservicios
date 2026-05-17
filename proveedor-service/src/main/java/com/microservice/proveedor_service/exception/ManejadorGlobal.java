@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -14,6 +15,24 @@ import lombok.Data;
 public class ManejadorGlobal {
 
     private static final Logger log = LoggerFactory.getLogger(ManejadorGlobal.class);
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+        log.warn("Argumento inválido: {}", e.getMessage());
+        ErrorResponse error = new ErrorResponse("Argumento inválido", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
+        String mensaje = e.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .orElse("La solicitud contiene datos inválidos");
+        log.warn("Validación fallida: {}", mensaje);
+        ErrorResponse error = new ErrorResponse("Datos inválidos", mensaje);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 
     @ExceptionHandler(ProveedorNoEncontradoException.class)
     public ResponseEntity<ErrorResponse> handleProveedorNoEncontrado(ProveedorNoEncontradoException e) {

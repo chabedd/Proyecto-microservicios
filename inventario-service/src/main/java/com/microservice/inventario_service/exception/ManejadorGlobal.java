@@ -5,11 +5,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.microservice.inventario_service.feignclient.FeignSupport.BodegaExternaException;
+import com.microservice.inventario_service.feignclient.FeignSupport.ProductoExternoException;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @RestControllerAdvice
 public class ManejadorGlobal {
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorResponse("Argumento inválido", e.getMessage()));
+    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
@@ -85,6 +95,20 @@ public class ManejadorGlobal {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Error de persistencia", e.getMessage()));
+    }
+
+    @ExceptionHandler(ProductoExternoException.class)
+    public ResponseEntity<ErrorResponse> handleProductoExterno(ProductoExternoException e) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ErrorResponse("Servicio de productos no disponible", e.getMessage()));
+    }
+
+    @ExceptionHandler(BodegaExternaException.class)
+    public ResponseEntity<ErrorResponse> handleBodegaExterna(BodegaExternaException e) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ErrorResponse("Servicio de bodegas no disponible", e.getMessage()));
     }
 
 }
