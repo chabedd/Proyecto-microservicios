@@ -1,4 +1,4 @@
-package com.microservice.producto_service.dto;
+package com.microservice.abastecimiento_service.feignclient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductoResponseDTO {
+public class ProveedorResponseDTO {
     private Long id;
-    private String codigo;
     private String nombre;
-    private Double precioBase;
-    private Long proveedorId;
     private Boolean activo;
 }

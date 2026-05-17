@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductoResponseDTO {
+public class DetalleOrdenCompraResponseDTO {
     private Long id;
-    private Long proveedorId;
-    private Boolean activo;
+    private Long productoId;
+    private int cantidad;
+    private Double precioUnitario;
 }

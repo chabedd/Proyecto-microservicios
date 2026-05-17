@@ -1,7 +1,7 @@
 package com.microservice.abastecimiento_service.dto;
 
-
-
+import java.time.LocalDateTime;
+import java.util.List;
 
 import com.microservice.abastecimiento_service.model.TipoEstado;
 
@@ -10,12 +10,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrdenCompraResponseDTO {
-    private Long id; 
-    private Long productoId; 
+    private Long id;
+    private Long proveedorId;
     private TipoEstado estado;
-    private int cantidad;
-
+    private LocalDateTime fechaCreacion;
+    private List<DetalleOrdenCompraResponseDTO> detalles;
 }

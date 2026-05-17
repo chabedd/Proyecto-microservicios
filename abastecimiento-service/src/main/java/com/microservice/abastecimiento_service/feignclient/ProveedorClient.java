@@ -1,4 +1,4 @@
-package com.microservice.producto_service.feignClient;
+package com.microservice.abastecimiento_service.feignclient;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
