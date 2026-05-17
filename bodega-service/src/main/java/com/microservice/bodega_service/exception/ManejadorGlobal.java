@@ -1,4 +1,4 @@
-package com.microservice.movimiento_service.exception;
+package com.microservice.bodega_service.exception;
 
 import java.util.stream.Collectors;
 
@@ -15,32 +15,20 @@ import lombok.NoArgsConstructor;
 @RestControllerAdvice
 public class ManejadorGlobal {
 
-    public static class MovimientoNoEncontradoException extends RuntimeException {
-        public MovimientoNoEncontradoException(String mensaje) {
+    public static class BodegaNotFoundException extends RuntimeException {
+        public BodegaNotFoundException(String mensaje) {
             super(mensaje);
         }
     }
 
-    public static class ValidacionMovimientoException extends RuntimeException {
-        public ValidacionMovimientoException(String mensaje) {
-            super(mensaje);
-        }
-    }
-
-    @ExceptionHandler(MovimientoNoEncontradoException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(MovimientoNoEncontradoException e) {
+    @ExceptionHandler(BodegaNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(BodegaNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("Recurso no encontrado", e.getMessage()));
-    }
-
-    @ExceptionHandler(ValidacionMovimientoException.class)
-    public ResponseEntity<ErrorResponse> handleValidacion(ValidacionMovimientoException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Error de validación", e.getMessage()));
+                .body(new ErrorResponse("Bodega no encontrada", e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleValidacion(MethodArgumentNotValidException e) {
         String errores = e.getBindingResult().getFieldErrors().stream()
                 .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
                 .collect(Collectors.joining(", "));
@@ -49,7 +37,7 @@ public class ManejadorGlobal {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception e) {
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Error interno del servidor", e.getMessage()));
     }

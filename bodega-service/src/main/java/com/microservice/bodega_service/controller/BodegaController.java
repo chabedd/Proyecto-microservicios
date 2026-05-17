@@ -2,6 +2,7 @@ package com.microservice.bodega_service.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,39 +26,24 @@ public class BodegaController {
 
     private final BodegaService service;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<BodegaResponse>> listar() {
-
-        List<BodegaResponse> lista = service.listar();
-
-        return ResponseEntity.ok(lista);
+        return ResponseEntity.ok(service.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BodegaResponse> buscarPorId(
-            @PathVariable Long id) {
-
-        BodegaResponse response = service.buscarPorId(id);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<BodegaResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<BodegaResponse> guardar(
-            @Valid @RequestBody BodegaRequest request) {
-
-        BodegaResponse response = service.guardar(request);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<BodegaResponse> guardar(@Valid @RequestBody BodegaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Long id) {
-
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.eliminar(id);
-
         return ResponseEntity.noContent().build();
     }
-
 }

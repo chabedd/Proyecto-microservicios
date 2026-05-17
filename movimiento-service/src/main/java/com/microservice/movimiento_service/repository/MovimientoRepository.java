@@ -13,7 +13,7 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long> {
 
     List<Movimiento> findByProductoId(Long productoId);
 
-    List<Movimiento> findByBodegaOrigenId(Long bodegaOrigenId);
+    List<Movimiento> findByBodegaOrigenIdOrBodegaDestinoId(Long bodegaOrigenId, Long bodegaDestinoId);
 
     List<Movimiento> findByTipo(TipoMovimiento tipo);
 }
