@@ -17,6 +17,7 @@ import com.microservice.inventario_service.dto.AjusteStockRequestDTO;
 import com.microservice.inventario_service.dto.InventarioRequestDTO;
 import com.microservice.inventario_service.dto.InventarioResponseDTO;
 import com.microservice.inventario_service.service.InventarioService;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +29,7 @@ public class InventarioController {
     private final InventarioService inventarioService;
 
     @PostMapping
-    public ResponseEntity<InventarioResponseDTO> crearInventario(@RequestBody InventarioRequestDTO requestDTO) {
+    public ResponseEntity<InventarioResponseDTO> crearInventario(@Valid @RequestBody InventarioRequestDTO requestDTO) {
         InventarioResponseDTO responseDTO = inventarioService.crearInventario(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
@@ -64,7 +65,7 @@ public class InventarioController {
     }
 
     @PatchMapping("/ajustar")
-    public ResponseEntity<InventarioResponseDTO> ajustarStock(@RequestBody AjusteStockRequestDTO dto) {
+    public ResponseEntity<InventarioResponseDTO> ajustarStock(@Valid @RequestBody AjusteStockRequestDTO dto) {
         InventarioResponseDTO inventario = inventarioService.ajustarStock(dto.getProductoId(), dto.getBodegaId(), dto.getDelta());
         return ResponseEntity.ok(inventario);
     }
