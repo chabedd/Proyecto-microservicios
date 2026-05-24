@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.microservice.inventario_service.dto.AjusteStockRequestDTO;
+import com.microservice.inventario_service.dto.AjusteStockRequestDto;
 import com.microservice.inventario_service.dto.InventarioRequestDTO;
 import com.microservice.inventario_service.dto.InventarioResponseDTO;
 import com.microservice.inventario_service.service.InventarioService;
@@ -64,7 +64,7 @@ public class InventarioController {
     }
 
     @PostMapping("/ajustar")
-    public ResponseEntity<InventarioResponseDTO> ajustarStockPost(@Valid @RequestBody AjusteStockRequestDTO dto) {
+    public ResponseEntity<InventarioResponseDTO> ajustarStockPost(@Valid @RequestBody AjusteStockRequestDto dto) {
         InventarioResponseDTO inventario = inventarioService.ajustarStock(dto.getProductoId(), dto.getBodegaId(), dto.getDelta());
         return ResponseEntity.ok(inventario);
     }

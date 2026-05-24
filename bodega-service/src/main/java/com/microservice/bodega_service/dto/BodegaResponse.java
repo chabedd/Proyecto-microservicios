@@ -15,8 +15,8 @@ public class BodegaResponse {
 
     private String ubicacion;
 
-    private Long capacidad;
+    private Integer capacidadMaximaItems;
 
-    private Boolean activa;
+    private Boolean activo;
 
 }

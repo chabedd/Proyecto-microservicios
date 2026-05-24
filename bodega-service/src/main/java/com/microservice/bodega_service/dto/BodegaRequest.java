@@ -20,10 +20,10 @@ public class BodegaRequest {
 
     @NotNull(message = "La capacidad es obligatoria")
     @Positive(message = "La capacidad debe ser mayor a 0")
-    private Long capacidad;
+    private Integer capacidadMaximaItems;
 
     @NotNull(message = "Debe indicar si está activa")
-    private Boolean activa;
+    private Boolean activo;
 }
 
 

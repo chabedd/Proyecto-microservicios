@@ -34,9 +34,9 @@ public class Bodega {
 
     @Column(nullable = false)
     @Positive(message = "La capacidad debe ser mayor a 0")
-    private Long capacidad;
+    private Integer capacidadMaximaItems;
 
     @Column(nullable = false)
-    private Boolean activa;
+    private Boolean activo;
 
 }

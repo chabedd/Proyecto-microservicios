@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(name = "inventario-service")
 public interface InventarioClient {
@@ -17,6 +17,6 @@ public interface InventarioClient {
     @GetMapping("/api/inventarios/bodega/{bodegaId}")
     List<InventarioResponseDTO> obtenerInventariosPorBodega(@PathVariable Long bodegaId);
 
-    @PostMapping("/api/inventarios/ajustar")
+    @PatchMapping("/api/inventarios/ajustar")
     InventarioResponseDTO ajustarStock(@RequestBody AjusteStockDTO dto);
 }
