@@ -1,4 +1,3 @@
-
 INSERT INTO abastecimiento_schema.ordenes_compra(proveedor_id, estado, fecha_creacion)
 VALUES
 (1, 'PENDIENTE', '2025-01-10 09:30:00'),
@@ -32,3 +31,4 @@ VALUES(4, 2,  80,  0.85);
 -- Detalles de la OC 5 (PENDIENTE — proveedor 4)
 INSERT INTO abastecimiento_schema.detalle_orden_compra(orden_compra_id, producto_id, cantidad, precio_unitario)
 VALUES(5, 4,  20,  22.50);
+

@@ -9,7 +9,5 @@ VALUES
     (1, 2, 110,  50, 500, 100),  -- Tornillo M8     en Bodega Valparaíso
     (2, 3, 160,  30, 400,  80),  -- Tuerca M8       en Bodega Temuco Sur
     (3, 1,  45,  20, 300,  50);  -- Cable Eléctrico en Bodega Central Santiago
-
--- Sincronizar secuencia de identidad
-SELECT setval(pg_get_serial_sequence('inventario_schema.inventarios','id'), COALESCE((SELECT MAX(id) FROM inventario_schema.inventarios), 1));
+;
 

@@ -1,4 +1,3 @@
-
 CREATE SCHEMA IF NOT EXISTS bodega_schema;
 
 CREATE TABLE IF NOT EXISTS bodega_schema.bodegas (

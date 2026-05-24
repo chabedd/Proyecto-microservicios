@@ -1,5 +1,3 @@
-
-
 INSERT INTO movimiento_schema.movimientos
     (producto_id, bodega_origen_id, bodega_destino_id, tipo, cantidad, motivo,fecha)
 VALUES

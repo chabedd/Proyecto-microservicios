@@ -1,4 +1,3 @@
-
 CREATE SCHEMA IF NOT EXISTS abastecimiento_schema;
 
 CREATE TABLE IF NOT EXISTS abastecimiento_schema.ordenes_compra (

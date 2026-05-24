@@ -1,4 +1,3 @@
-
 CREATE SCHEMA IF NOT EXISTS movimiento_schema;
 
 CREATE TABLE IF NOT EXISTS movimiento_schema.movimientos (
@@ -21,6 +20,15 @@ CREATE TABLE IF NOT EXISTS movimiento_schema.movimientos (
         )
     )
 );
+
+ALTER TABLE movimiento_schema.movimientos
+    ADD CONSTRAINT fk_movimientos_producto FOREIGN KEY (producto_id) REFERENCES producto_schema.productos(id) NOT VALID;
+
+ALTER TABLE movimiento_schema.movimientos
+    ADD CONSTRAINT fk_movimientos_bodega_origen FOREIGN KEY (bodega_origen_id) REFERENCES bodega_schema.bodegas(id) NOT VALID;
+
+ALTER TABLE movimiento_schema.movimientos
+    ADD CONSTRAINT fk_movimientos_bodega_destino FOREIGN KEY (bodega_destino_id) REFERENCES bodega_schema.bodegas(id) NOT VALID;
 
 CREATE INDEX idx_movimientos_producto ON movimiento_schema.movimientos(producto_id);
 CREATE INDEX idx_movimientos_tipo     ON movimiento_schema.movimientos(tipo);

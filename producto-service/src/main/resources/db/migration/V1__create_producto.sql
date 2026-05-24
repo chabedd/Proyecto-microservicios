@@ -1,4 +1,3 @@
-
 CREATE SCHEMA IF NOT EXISTS producto_schema;
 
 CREATE TABLE IF NOT EXISTS producto_schema.productos (
