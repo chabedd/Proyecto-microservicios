@@ -1,5 +1,6 @@
 package com.microservice.producto_service.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,9 +51,13 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public List<ProductoResponseDTO> obtenerTodos() {
-        return repository.findAll().stream()
-                .map(this::mapearADTO)
-                .collect(Collectors.toList());
+        List<Producto> listaP = repository.findAll();
+        List <ProductoResponseDTO> productos = new ArrayList<>();
+        for (Producto p : listaP) {
+            productos.add(mapearADTO(p));
+            
+        }
+        return productos;
     }
 
     @Transactional(readOnly = true)

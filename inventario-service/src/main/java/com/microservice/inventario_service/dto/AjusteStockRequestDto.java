@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AjusteStockRequestDTO {
+public class AjusteStockRequestDto {
 
     @NotNull(message = "El productoId es obligatorio")
     private Long productoId;
