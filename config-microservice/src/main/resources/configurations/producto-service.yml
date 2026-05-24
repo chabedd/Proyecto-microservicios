@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     # Aquí especificamos el esquema en la URL para este microservicio
-    url: jdbc:postgresql://${custom.database.host}:${custom.database.port}/${custom.database.name}?currentSchema=producto_schema
+    url: jdbc:postgresql://${custom.database.host}:${custom.database.port}/${custom.database.name}?currentSchema=producto_schema&sslmode=require
   flyway:
     schemas: producto_schema
     default-schema: producto_schema

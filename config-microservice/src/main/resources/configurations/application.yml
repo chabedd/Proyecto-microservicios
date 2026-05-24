@@ -17,11 +17,17 @@ spring:
         driver-class-name: org.postgresql.Driver
         username: ${DB_USER:postgres}
         password: ${DB_PASS:password}
+        hikari:
+            maximum-pool-size: 2
+            minimum-idle: 0
+            idle-timeout: 10000
+            connection-timeout: 30000
     flyway:
         enabled: true
         baseline-on-migrate: true
         baseline-version: 1.0
         create-schemas: true
+        connect-retries: 5
     jpa:
         open-in-view: false
         hibernate:
@@ -33,8 +39,8 @@ spring:
 
 custom:
     database:
-        host: localhost
+        host: aws-1-us-west-2.pooler.supabase.com
         port: 5432
-        name: proyecto_db
+        name: postgres
 
 
