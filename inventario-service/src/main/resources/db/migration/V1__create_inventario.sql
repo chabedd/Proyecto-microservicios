@@ -5,23 +5,10 @@ CREATE TABLE IF NOT EXISTS inventario_schema.inventarios (
     producto_id          BIGINT    NOT NULL,
     bodega_id            BIGINT    NOT NULL,
     stock_actual         INTEGER   NOT NULL,
-    stock_minimo         INTEGER   NOT NULL,
-    stock_maximo         INTEGER   NOT NULL,
-    punto_reposicion     INTEGER   NOT NULL,
     ultima_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT uq_inventario_producto_bodega UNIQUE (producto_id, bodega_id),
     CONSTRAINT chk_stock_no_negativo CHECK (
-        stock_actual     >= 0 AND
-        stock_minimo     >= 0 AND
-        stock_maximo     >= 0 AND
-        punto_reposicion >= 0
-    ),
-    CONSTRAINT chk_stock_rangos CHECK (
-        stock_maximo     >  stock_minimo AND
-        punto_reposicion >  stock_minimo AND
-        punto_reposicion <  stock_maximo AND
-        stock_actual     <= stock_maximo AND
-        stock_actual     >= stock_minimo
+        stock_actual     >= 0
     )
 );
 

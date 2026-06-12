@@ -39,9 +39,6 @@ public class Proveedor {
     @Column(nullable = false)
     private String direccion;
 
-    @Column(nullable = false)
-    private Boolean activo;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaRegistro;
 
@@ -49,9 +46,6 @@ public class Proveedor {
     protected void onCreate() {
         if (this.fechaRegistro == null) {
             this.fechaRegistro = LocalDateTime.now();
-        }
-        if (this.activo == null) {
-            this.activo = true;
         }
     }
 }

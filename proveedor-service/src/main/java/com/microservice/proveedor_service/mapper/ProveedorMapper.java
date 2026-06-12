@@ -27,7 +27,6 @@ public class ProveedorMapper {
                 proveedor.getEmail(),
                 proveedor.getTelefono(),
                 proveedor.getDireccion(),
-                proveedor.getActivo(),
                 proveedor.getFechaRegistro());
     }
 

@@ -55,6 +55,13 @@ public class ManejadorGlobal {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public ResponseEntity<ErrorResponse> handleDataAccessException(org.springframework.dao.DataAccessException e) {
+        log.error("Error de acceso a datos / base de datos: {}", e.getMessage(), e);
+        ErrorResponse error = new ErrorResponse("Error de base de datos", "No pudimos completar la operación. Por favor, intenta de nuevo más tarde.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception e) {
         log.error("Error no controlado: {}", e.getMessage(), e);

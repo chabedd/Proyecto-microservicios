@@ -6,9 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.microservice.inventario_service.feignclient.FeignSupport.BodegaExternaException;
-import com.microservice.inventario_service.feignclient.FeignSupport.ProductoExternoException;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,8 +15,8 @@ public class ManejadorGlobal {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(new ErrorResponse("Argumento inválido", e.getMessage()));
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Argumento inválido", e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -38,8 +35,8 @@ public class ManejadorGlobal {
         String mensaje = e.getMessage();
         // Fallback para otros RuntimeException no manejados específicamente
         return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(new ErrorResponse("Error interno del servidor", mensaje));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("Error interno del servidor", mensaje));
     }
 
     @ExceptionHandler(Exception.class)
@@ -109,18 +106,21 @@ public class ManejadorGlobal {
                 .body(new ErrorResponse("Error de persistencia", e.getMessage()));
     }
 
-    @ExceptionHandler(ProductoExternoException.class)
-    public ResponseEntity<ErrorResponse> handleProductoExterno(ProductoExternoException e) {
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public ResponseEntity<ErrorResponse> handleDataAccessException(org.springframework.dao.DataAccessException e) {
         return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(new ErrorResponse("Servicio de productos no disponible", e.getMessage()));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("Error de base de datos",
+                        "No pudimos completar la operación en la base de datos. Por favor, intenta nuevamente."));
     }
 
-    @ExceptionHandler(BodegaExternaException.class)
-    public ResponseEntity<ErrorResponse> handleBodegaExterna(BodegaExternaException e) {
+    @ExceptionHandler(feign.FeignException.class)
+    public ResponseEntity<ErrorResponse> handleFeignException(feign.FeignException e) {
+        int status = e.status() > 0 ? e.status() : 503;
         return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(new ErrorResponse("Servicio de bodegas no disponible", e.getMessage()));
+                .status(HttpStatus.valueOf(status))
+                .body(new ErrorResponse("Error de comunicación externa",
+                        "No se pudo completar la comunicación con el servicio externo. Detalles: " + e.getMessage()));
     }
 
 }

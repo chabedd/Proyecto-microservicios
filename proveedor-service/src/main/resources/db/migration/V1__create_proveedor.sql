@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS proveedor_schema.proveedores (
     email          VARCHAR(255) NOT NULL,
     telefono       VARCHAR(50)  NOT NULL,
     direccion      VARCHAR(255) NOT NULL,
-    activo         BOOLEAN      NOT NULL DEFAULT TRUE,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT uq_proveedores_rut UNIQUE (rut),
     CONSTRAINT chk_email_formato CHECK (email LIKE '%@%.%'),
@@ -16,5 +15,4 @@ CREATE TABLE IF NOT EXISTS proveedor_schema.proveedores (
 );
 
 CREATE INDEX idx_proveedores_rut    ON proveedor_schema.proveedores(rut);
-CREATE INDEX idx_proveedores_activo ON proveedor_schema.proveedores(activo);
 CREATE INDEX idx_proveedores_nombre ON proveedor_schema.proveedores(nombre);

@@ -24,9 +24,6 @@ public class InventarioMapper {
         inventario.setProductoId(dto.getProductoId());
         inventario.setBodegaId(dto.getBodegaId());
         inventario.setStockActual(dto.getStockActual());
-        inventario.setStockMinimo(dto.getStockMinimo());
-        inventario.setStockMaximo(dto.getStockMaximo());
-        inventario.setPuntoReposicion(dto.getPuntoReposicion());
         inventario.setUltimaActualizacion(LocalDateTime.now());
 
         return inventario;
@@ -45,9 +42,6 @@ public class InventarioMapper {
         dto.setProductoId(inventario.getProductoId());
         dto.setBodegaId(inventario.getBodegaId());
         dto.setStockActual(inventario.getStockActual());
-        dto.setStockMinimo(inventario.getStockMinimo());
-        dto.setStockMaximo(inventario.getStockMaximo());
-        dto.setPuntoReposicion(inventario.getPuntoReposicion());
         dto.setUltimaActualizacion(inventario.getUltimaActualizacion());
 
         return dto;
@@ -77,9 +71,6 @@ public class InventarioMapper {
         inventario.setProductoId(dto.getProductoId());
         inventario.setBodegaId(dto.getBodegaId());
         inventario.setStockActual(dto.getStockActual());
-        inventario.setStockMinimo(dto.getStockMinimo());
-        inventario.setStockMaximo(dto.getStockMaximo());
-        inventario.setPuntoReposicion(dto.getPuntoReposicion());
         inventario.setUltimaActualizacion(LocalDateTime.now());
     }
 }

@@ -34,15 +34,6 @@ public class Inventario {
     private int stockActual;
 
     @Column(nullable = false)
-    private int stockMinimo;
-
-    @Column(nullable = false)
-    private int stockMaximo;
-
-    @Column(nullable = false)
-    private int puntoReposicion;
-
-    @Column(nullable = false)
     private LocalDateTime ultimaActualizacion;
 
     @PrePersist
