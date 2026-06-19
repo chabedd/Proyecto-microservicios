@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,6 +47,41 @@ public class ManejadorGlobal {
                 .collect(Collectors.joining(", "));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("Error de validación", errores));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        String mensaje = "Parámetro inválido: " + e.getValue();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Error de tipo de parámetro", mensaje));
+    }
+
+    @ExceptionHandler(feign.FeignException.class)
+    public ResponseEntity<ErrorResponse> handleFeignException(feign.FeignException e) {
+        String mensaje = e.contentUTF8();
+        if (mensaje != null && !mensaje.isBlank()) {
+            try {
+                int index = mensaje.indexOf("\"mensaje\":\"");
+                if (index != -1) {
+                    int start = index + 11;
+                    int end = mensaje.indexOf("\"", start);
+                    if (end != -1) {
+                        mensaje = mensaje.substring(start, end);
+                    }
+                }
+            } catch (Exception ex) {
+                // fall back to contentUTF8
+            }
+        } else {
+            mensaje = "Error de comunicación entre servicios internos.";
+        }
+
+        HttpStatus status = HttpStatus.resolve(e.status());
+        if (status == null) {
+            status = HttpStatus.BAD_GATEWAY;
+        }
+        return ResponseEntity.status(status)
+                .body(new ErrorResponse("Error en servicio externo", mensaje));
     }
 
     @ExceptionHandler(Exception.class)

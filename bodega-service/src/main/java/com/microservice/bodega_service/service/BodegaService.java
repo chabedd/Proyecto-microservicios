@@ -40,7 +40,6 @@ public class BodegaService {
         bodega.setNombre(request.getNombre());
         bodega.setUbicacion(request.getUbicacion());
         bodega.setCapacidadMaximaItems(request.getCapacidadMaximaItems());
-        bodega.setActivo(request.getActivo());
 
         Bodega guardada = repository.save(bodega);
         return mapear(guardada);
@@ -66,7 +65,6 @@ public class BodegaService {
         response.setNombre(bodega.getNombre());
         response.setUbicacion(bodega.getUbicacion());
         response.setCapacidadMaximaItems(bodega.getCapacidadMaximaItems());
-        response.setActivo(bodega.getActivo());
         return response;
     }
 }

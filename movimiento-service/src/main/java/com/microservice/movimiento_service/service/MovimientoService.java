@@ -1,7 +1,6 @@
 package com.microservice.movimiento_service.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import com.microservice.movimiento_service.feignClient.InventarioClient;
 import com.microservice.movimiento_service.model.Movimiento;
 import com.microservice.movimiento_service.model.TipoMovimiento;
 import com.microservice.movimiento_service.repository.MovimientoRepository;
+import com.microservice.movimiento_service.validation.MovimientoValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +27,11 @@ public class MovimientoService {
 
     private final MovimientoRepository repository;
     private final InventarioClient inventarioClient;
+    private final MovimientoValidator movimientoValidator;
 
     @Transactional
     public MovimientoResponseDTO registrar(MovimientoRequestDTO dto) {
-        validarCamposBodega(dto.getTipo(), dto.getBodegaOrigenId(), dto.getBodegaDestinoId());
+        movimientoValidator.validarCamposBodega(dto.getTipo(), dto.getBodegaOrigenId(), dto.getBodegaDestinoId());
 
         Movimiento m = new Movimiento();
         m.setProductoId(dto.getProductoId());
@@ -51,11 +52,9 @@ public class MovimientoService {
 
     @Transactional(readOnly = true)
     public List<MovimientoResponseDTO> obtenerTodos() {
-        List<MovimientoResponseDTO> resultado = new ArrayList<>();
-        for (Movimiento m : repository.findAll()) {
-            resultado.add(mapearADTO(m));
-        }
-        return resultado;
+        return repository.findAll().stream()
+                .map(this::mapearADTO)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -66,48 +65,23 @@ public class MovimientoService {
 
     @Transactional(readOnly = true)
     public List<MovimientoResponseDTO> obtenerPorProducto(Long productoId) {
-        List<MovimientoResponseDTO> resultado = new ArrayList<>();
-        for (Movimiento m : repository.findByProductoId(productoId)) {
-            resultado.add(mapearADTO(m));
-        }
-        return resultado;
+        return repository.findByProductoId(productoId).stream()
+                .map(this::mapearADTO)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public List<MovimientoResponseDTO> obtenerPorBodega(Long bodegaId) {
-        List<MovimientoResponseDTO> resultado = new ArrayList<>();
-        for (Movimiento m : repository.findByBodegaOrigenIdOrBodegaDestinoId(bodegaId, bodegaId)) {
-            resultado.add(mapearADTO(m));
-        }
-        return resultado;
+        return repository.findByBodegaOrigenIdOrBodegaDestinoId(bodegaId, bodegaId).stream()
+                .map(this::mapearADTO)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public List<MovimientoResponseDTO> obtenerPorTipo(TipoMovimiento tipo) {
-        List<MovimientoResponseDTO> resultado = new ArrayList<>();
-        for (Movimiento m : repository.findByTipo(tipo)) {
-            resultado.add(mapearADTO(m));
-        }
-        return resultado;
-    }
-
-    private void validarCamposBodega(TipoMovimiento tipo, Long origenId, Long destinoId) {
-        switch (tipo) {
-            case ENTRADA:
-                if (destinoId == null)
-                    throw new ValidacionMovimientoException("El tipo ENTRADA requiere bodegaDestinoId.");
-                break;
-            case SALIDA:
-                if (origenId == null)
-                    throw new ValidacionMovimientoException("El tipo SALIDA requiere bodegaOrigenId.");
-                break;
-            case TRANSFERENCIA:
-                if (origenId == null || destinoId == null)
-                    throw new ValidacionMovimientoException("El tipo TRANSFERENCIA requiere bodegaOrigenId y bodegaDestinoId.");
-                if (origenId.equals(destinoId))
-                    throw new ValidacionMovimientoException("La bodega origen y destino no pueden ser la misma en una TRANSFERENCIA.");
-                break;
-        }
+        return repository.findByTipo(tipo).stream()
+                .map(this::mapearADTO)
+                .toList();
     }
 
     private void aplicarEfectoInventario(Movimiento m) {

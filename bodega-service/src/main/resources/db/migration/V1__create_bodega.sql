@@ -5,11 +5,9 @@ CREATE TABLE IF NOT EXISTS bodega_schema.bodegas (
     nombre                 VARCHAR(255) NOT NULL,
     ubicacion              VARCHAR(255) NOT NULL,
     capacidad_maxima_items INTEGER      NOT NULL,
-    activo                 BOOLEAN      NOT NULL DEFAULT TRUE,
     CONSTRAINT chk_capacidad_maxima_positiva CHECK (capacidad_maxima_items > 0),
     CONSTRAINT chk_bodega_nombre CHECK (TRIM(nombre) != ''),
     CONSTRAINT uq_bodega_nombre UNIQUE(nombre)
 );
 
-CREATE INDEX idx_bodegas_activo ON bodega_schema.bodegas(activo);
 CREATE INDEX idx_bodega_ubicacion ON bodega_schema.bodegas(ubicacion);
