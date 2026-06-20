@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class ProveedorResponseDTO {
     private Long id;
     private String nombre;
-    private Boolean activo;
 }

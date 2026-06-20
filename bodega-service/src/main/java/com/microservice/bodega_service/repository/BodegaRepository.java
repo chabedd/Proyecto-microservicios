@@ -7,5 +7,5 @@ import com.microservice.bodega_service.model.Bodega;
 
 @Repository
 public interface BodegaRepository extends JpaRepository<Bodega, Long>{
-
+    boolean existsByNombre(String nombre);
 }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.microservice.bodega_service.dto.BodegaRequest;
 import com.microservice.bodega_service.dto.BodegaResponse;
 import com.microservice.bodega_service.exception.ManejadorGlobal.BodegaNotFoundException;
+import com.microservice.bodega_service.exception.ManejadorGlobal.BodegaNombreDuplicadoException;
 import com.microservice.bodega_service.model.Bodega;
 import com.microservice.bodega_service.repository.BodegaRepository;
 
@@ -36,6 +37,10 @@ public class BodegaService {
 
     @Transactional
     public BodegaResponse guardar(BodegaRequest request) {
+        if (repository.existsByNombre(request.getNombre())) {
+            throw new BodegaNombreDuplicadoException("El nombre de la bodega ya está registrado: " + request.getNombre());
+        }
+
         Bodega bodega = new Bodega();
         bodega.setNombre(request.getNombre());
         bodega.setUbicacion(request.getUbicacion());

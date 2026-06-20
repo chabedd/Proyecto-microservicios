@@ -121,13 +121,4 @@ public class ManejadorGlobal {
                         "No pudimos completar la operación en la base de datos. Por favor, intenta nuevamente."));
     }
 
-    @ExceptionHandler(feign.FeignException.class)
-    public ResponseEntity<ErrorResponse> handleFeignException(feign.FeignException e) {
-        int status = e.status() > 0 ? e.status() : 503;
-        return ResponseEntity
-                .status(HttpStatus.valueOf(status))
-                .body(new ErrorResponse("Error de comunicación externa",
-                        "No se pudo completar la comunicación con el servicio externo. Detalles: " + e.getMessage()));
-    }
-
 }

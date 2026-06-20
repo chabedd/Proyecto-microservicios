@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +14,13 @@ import lombok.NoArgsConstructor;
 
 @RestControllerAdvice
 public class ManejadorGlobal {
+
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Datos inválidos", "Error al procesar la solicitud: formato de datos inválido o valor no permitido."));
+    }
 
     public static class MovimientoNoEncontradoException extends RuntimeException {
         public MovimientoNoEncontradoException(String mensaje) {
@@ -49,39 +55,10 @@ public class ManejadorGlobal {
                 .body(new ErrorResponse("Error de validación", errores));
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
-        String mensaje = "Parámetro inválido: " + e.getValue();
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Error de tipo de parámetro", mensaje));
-    }
-
-    @ExceptionHandler(feign.FeignException.class)
-    public ResponseEntity<ErrorResponse> handleFeignException(feign.FeignException e) {
-        String mensaje = e.contentUTF8();
-        if (mensaje != null && !mensaje.isBlank()) {
-            try {
-                int index = mensaje.indexOf("\"mensaje\":\"");
-                if (index != -1) {
-                    int start = index + 11;
-                    int end = mensaje.indexOf("\"", start);
-                    if (end != -1) {
-                        mensaje = mensaje.substring(start, end);
-                    }
-                }
-            } catch (Exception ex) {
-                // fall back to contentUTF8
-            }
-        } else {
-            mensaje = "Error de comunicación entre servicios internos.";
-        }
-
-        HttpStatus status = HttpStatus.resolve(e.status());
-        if (status == null) {
-            status = HttpStatus.BAD_GATEWAY;
-        }
-        return ResponseEntity.status(status)
-                .body(new ErrorResponse("Error en servicio externo", mensaje));
+                .body(new ErrorResponse("Parámetro inválido", "El parámetro '" + e.getName() + "': valor no permitido o tipo incorrecto."));
     }
 
     @ExceptionHandler(Exception.class)

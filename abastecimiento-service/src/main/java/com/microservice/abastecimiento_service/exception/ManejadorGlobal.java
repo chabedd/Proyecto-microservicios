@@ -18,6 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ManejadorGlobal {
 
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Datos inválidos", "Error al procesar la solicitud: formato de datos inválido o valor no permitido."));
+    }
+
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<ErrorResponse> handleNoEncontrado(RecursoNoEncontradoException e) {
         log.warn("Recurso no encontrado: {}", e.getMessage());
