@@ -25,4 +25,7 @@ public class ProductoResponseDTO {
 
     @Schema(description = "ID del proveedor asociado", example = "1")
     private Long proveedorId;
+
+    @Schema(description = "Indica si el producto está activo", example = "true")
+    private Boolean activo;
 }

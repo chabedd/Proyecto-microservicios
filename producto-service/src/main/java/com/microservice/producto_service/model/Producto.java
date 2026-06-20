@@ -35,12 +35,12 @@ public class Producto {
     private Long proveedorId;
 
     @Column(nullable = false)
-    private Boolean activo;
+    private Boolean activo = true;
 
     @PrePersist
-    protected void onCreate() {
-        if (this.activo == null) {
-            this.activo = true;
+    public void prePersist() {
+        if (activo == null) {
+            activo = true;
         }
     }
 }

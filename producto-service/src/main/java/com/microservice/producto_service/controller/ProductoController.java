@@ -71,6 +71,25 @@ public class ProductoController {
         return ResponseEntity.ok(service.actualizar(id, dto));
     }
 
+    @PutMapping("/{id}/desactivar")
+    @Operation(summary = "Desactivar un producto", description = "Desactiva un producto para que no pueda ser comprado o vendido, si no tiene stock.")
+    @ApiResponse(responseCode = "200", description = "Producto desactivado exitosamente")
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    @ApiResponse(responseCode = "409", description = "No se puede desactivar porque tiene stock")
+    public ResponseEntity<String> desactivar(@PathVariable Long id) {
+        service.desactivar(id);
+        return ResponseEntity.ok("Producto desactivado exitosamente");
+    }
+
+    @PutMapping("/{id}/activar")
+    @Operation(summary = "Activar un producto", description = "Activa un producto previamente desactivado.")
+    @ApiResponse(responseCode = "200", description = "Producto activado exitosamente")
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    public ResponseEntity<String> activar(@PathVariable Long id) {
+        service.activar(id);
+        return ResponseEntity.ok("Producto activado exitosamente");
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar un producto", description = "Elimina físicamente un producto del sistema si cumple con las reglas de negocio (por ejemplo, que no tenga stock activo).")
     @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente")

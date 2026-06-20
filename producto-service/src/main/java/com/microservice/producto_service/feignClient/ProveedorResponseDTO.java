@@ -14,5 +14,4 @@ public class ProveedorResponseDTO {
     private String email;
     private String telefono;
     private String direccion;
-    private Boolean activo;
 }
