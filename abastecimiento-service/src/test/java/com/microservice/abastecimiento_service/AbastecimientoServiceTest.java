@@ -103,9 +103,9 @@ class AbastecimientoServiceTest {
         ordenAprobada.setDetalles(new ArrayList<>(List.of(detalle)));
     }
 
-    // ==========================================
+    
     // TESTS PARA CREAR ORDEN
-    // ==========================================
+    
 
     @Test
     void crearOrden_conProveedorYProductoActivos_deberiaCrearOrden() {
