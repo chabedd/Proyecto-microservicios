@@ -1,0 +1,193 @@
+services:
+  config-server:
+    build:
+      context: ./config-microservice
+      dockerfile: Dockerfile
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+  eureka-server:
+    build:
+      context: ./eureka-microservice
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_INSTANCE_HOSTNAME: eureka-server
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+  producto-service:
+    build:
+      context: ./producto-service
+      dockerfile: Dockerfile
+    container_name: producto-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      CUSTOM_DATABASE_HOST: ${DB_HOST:-aws-1-us-west-2.pooler.supabase.com}
+      CUSTOM_DATABASE_PORT: ${DB_PORT:-5432}
+      CUSTOM_DATABASE_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-password}
+      SPRING_FLYWAY_VALIDATE_ON_MIGRATE: "false"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  inventario-service:
+    build:
+      context: ./inventario-service
+      dockerfile: Dockerfile
+    container_name: inventario-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      CUSTOM_DATABASE_HOST: ${DB_HOST:-aws-1-us-west-2.pooler.supabase.com}
+      CUSTOM_DATABASE_PORT: ${DB_PORT:-5432}
+      CUSTOM_DATABASE_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-password}
+      SPRING_FLYWAY_VALIDATE_ON_MIGRATE: "false"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  bodega-service:
+    build:
+      context: ./bodega-service
+      dockerfile: Dockerfile
+    container_name: bodega-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      CUSTOM_DATABASE_HOST: ${DB_HOST:-aws-1-us-west-2.pooler.supabase.com}
+      CUSTOM_DATABASE_PORT: ${DB_PORT:-5432}
+      CUSTOM_DATABASE_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-password}
+      SPRING_FLYWAY_VALIDATE_ON_MIGRATE: "false"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  abastecimiento-service:
+    build:
+      context: ./abastecimiento-service
+      dockerfile: Dockerfile
+    container_name: abastecimiento-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      CUSTOM_DATABASE_HOST: ${DB_HOST:-aws-1-us-west-2.pooler.supabase.com}
+      CUSTOM_DATABASE_PORT: ${DB_PORT:-5432}
+      CUSTOM_DATABASE_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-password}
+      SPRING_FLYWAY_VALIDATE_ON_MIGRATE: "false"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  movimiento-service:
+    build:
+      context: ./movimiento-service
+      dockerfile: Dockerfile
+    container_name: movimiento-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      CUSTOM_DATABASE_HOST: ${DB_HOST:-aws-1-us-west-2.pooler.supabase.com}
+      CUSTOM_DATABASE_PORT: ${DB_PORT:-5432}
+      CUSTOM_DATABASE_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-password}
+      SPRING_FLYWAY_VALIDATE_ON_MIGRATE: "false"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  proveedor-service:
+    build:
+      context: ./proveedor-service
+      dockerfile: Dockerfile
+    container_name: proveedor-service
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      CUSTOM_DATABASE_HOST: ${DB_HOST:-aws-1-us-west-2.pooler.supabase.com}
+      CUSTOM_DATABASE_PORT: ${DB_PORT:-5432}
+      CUSTOM_DATABASE_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-password}
+      SPRING_FLYWAY_VALIDATE_ON_MIGRATE: "false"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY: "DEBUG"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy

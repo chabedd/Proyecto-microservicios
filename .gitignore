@@ -36,3 +36,6 @@ desktop.ini
 # --- TEMPORALES ---
 temp/
 tmp/
+
+# --- CONFIGURACION Y CREDENCIALES LOCALES ---
+.env
