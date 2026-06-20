@@ -41,8 +41,8 @@ class ProductoControllerTest {
 
     ProductoRequestDTO requestA = new ProductoRequestDTO("prod1","libro",100.0,1L);
     ProductoRequestDTO requestB = new ProductoRequestDTO("prod2","libreta",90.0,1L);
-    ProductoResponseDTO responseA = new ProductoResponseDTO(2L,"prod1","libro",100.0,1L,true);
-    ProductoResponseDTO responseB = new ProductoResponseDTO(3L,"prod2","libreta",90.0,1L,true);
+    ProductoResponseDTO responseA = new ProductoResponseDTO(2L,"prod1","libro",100.0,1L);
+    ProductoResponseDTO responseB = new ProductoResponseDTO(3L,"prod2","libreta",90.0,1L);
     @Test
     void crear_shouldReturn201yProducto() throws Exception{
     
