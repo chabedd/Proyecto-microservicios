@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,7 @@ import com.microservice.abastecimiento_service.model.OrdenCompra;
 import com.microservice.abastecimiento_service.model.TipoEstado;
 import com.microservice.abastecimiento_service.repository.OrdenCompraRepository;
 import com.microservice.abastecimiento_service.service.AbastecimientoService;
+import com.microservice.abastecimiento_service.validation.AbastecimientoValidator;
 
 @ExtendWith(MockitoExtension.class)
 class AbastecimientoServiceTest {
@@ -51,6 +53,8 @@ class AbastecimientoServiceTest {
     private ProductoClient productoClient;
     @Mock
     private ProveedorClient proveedorClient;
+    @Mock
+    private AbastecimientoValidator abastecimientoValidator;
 
     @InjectMocks
     private AbastecimientoService service;
@@ -59,8 +63,8 @@ class AbastecimientoServiceTest {
     private OrdenCompraRequestDTO requestDTO;
     private OrdenCompra ordenPendiente;
     private OrdenCompra ordenAprobada;
-    private ProveedorResponseDTO proveedorActivo;
-    private ProductoResponseDTO productoActivo;
+    private ProveedorResponseDTO proveedor;
+    private ProductoResponseDTO producto;
 
     @BeforeEach
     void setUp() {
@@ -75,13 +79,11 @@ class AbastecimientoServiceTest {
         requestDTO.setDetalles(List.of(detalleReq));
 
         // 2. Preparar DTOs de Microservicios externos
-        proveedorActivo = new ProveedorResponseDTO();
-        proveedorActivo.setId(10L);
-        proveedorActivo.setActivo(true);
+        proveedor = new ProveedorResponseDTO();
+        proveedor.setId(10L);
 
-        productoActivo = new ProductoResponseDTO();
-        productoActivo.setId(100L);
-        productoActivo.setActivo(true);
+        producto = new ProductoResponseDTO();
+        producto.setId(100L);
 
         // 3. Preparar Entidades de Base de datos
         DetalleOrdenCompra detalle = new DetalleOrdenCompra();
@@ -108,10 +110,10 @@ class AbastecimientoServiceTest {
     
 
     @Test
-    void crearOrden_conProveedorYProductoActivos_deberiaCrearOrden() {
+    void crearOrden_conProveedorYProductoExistentes_deberiaCrearOrden() {
         // Preparar
-        when(proveedorClient.obtenerProveedorPorId(10L)).thenReturn(proveedorActivo);
-        when(productoClient.obtenerProductoPorId(100L)).thenReturn(productoActivo);
+        when(proveedorClient.obtenerProveedorPorId(10L)).thenReturn(proveedor);
+        when(productoClient.obtenerProductoPorId(100L)).thenReturn(producto);
         when(repository.save(any(OrdenCompra.class))).thenReturn(ordenPendiente);
 
         // Actuar
@@ -123,28 +125,7 @@ class AbastecimientoServiceTest {
         verify(repository, times(1)).save(any(OrdenCompra.class));
     }
 
-    @Test
-    void crearOrden_conProveedorInactivo_deberiaLanzarExcepcion() {
-        // Preparar
-        proveedorActivo.setActivo(false); // Inactivamos el proveedor
-        when(proveedorClient.obtenerProveedorPorId(10L)).thenReturn(proveedorActivo);
 
-        // Actuar y Afirmar
-        assertThrows(ReglaDeNegocioException.class, () -> service.crearOrden(requestDTO));
-        verify(repository, never()).save(any()); // No debe guardar nada
-    }
-
-    @Test
-    void crearOrden_conProductoInactivo_deberiaLanzarExcepcion() {
-        // Preparar
-        productoActivo.setActivo(false); // Inactivamos el producto
-        when(proveedorClient.obtenerProveedorPorId(10L)).thenReturn(proveedorActivo);
-        when(productoClient.obtenerProductoPorId(100L)).thenReturn(productoActivo);
-
-        // Actuar y Afirmar
-        assertThrows(ReglaDeNegocioException.class, () -> service.crearOrden(requestDTO));
-        verify(repository, never()).save(any());
-    }
 
   
     // TESTS PARA CAMBIAR ESTADO Y MÁQUINA DE ESTADOS
@@ -184,6 +165,8 @@ class AbastecimientoServiceTest {
     void cambiarEstado_aRecibidaSinBodegaId_deberiaLanzarExcepcion() {
         // Preparar
         when(repository.findById(2L)).thenReturn(Optional.of(ordenAprobada));
+        doThrow(new ValidacionException("Se requiere el parámetro bodegaId para recibir una OC."))
+                .when(abastecimientoValidator).validarBodegaParaRecepcion(null);
 
         // Actuar y Afirmar: Intentamos pasar a RECIBIDA enviando null en bodegaId
         assertThrows(ValidacionException.class, () -> service.cambiarEstado(2L, "RECIBIDA", null));
@@ -195,6 +178,8 @@ class AbastecimientoServiceTest {
     void cambiarEstado_transicionInvalida_deberiaLanzarExcepcion() {
         // Preparar
         when(repository.findById(1L)).thenReturn(Optional.of(ordenPendiente));
+        doThrow(new ReglaDeNegocioException("Transición inválida"))
+                .when(abastecimientoValidator).validarTransicion(TipoEstado.PENDIENTE, TipoEstado.RECIBIDA);
 
         // Actuar y Afirmar: Una orden PENDIENTE no puede pasar directo a RECIBIDA
         assertThrows(ReglaDeNegocioException.class, () -> service.cambiarEstado(1L, "RECIBIDA", 5L));

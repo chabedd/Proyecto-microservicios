@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservice.abastecimiento_service.controller.AbastecimientoController;
+import com.microservice.abastecimiento_service.dto.DetalleOrdenCompraRequestDTO;
 import com.microservice.abastecimiento_service.dto.OrdenCompraRequestDTO;
 import com.microservice.abastecimiento_service.dto.OrdenCompraResponseDTO;
 import com.microservice.abastecimiento_service.service.AbastecimientoService;
@@ -40,7 +41,7 @@ class AbastecimientoControllerTest {
     private AbastecimientoService service;
 
     // Instanciamos los objetos vacíos (o con constructores si los tuvieras) para usarlos en los tests
-    OrdenCompraRequestDTO requestDTO = new OrdenCompraRequestDTO();
+    OrdenCompraRequestDTO requestDTO = new OrdenCompraRequestDTO(1L, List.of(new DetalleOrdenCompraRequestDTO(1L, 10, 100.0)));
     OrdenCompraResponseDTO responseA = new OrdenCompraResponseDTO();
     OrdenCompraResponseDTO responseB = new OrdenCompraResponseDTO();
 

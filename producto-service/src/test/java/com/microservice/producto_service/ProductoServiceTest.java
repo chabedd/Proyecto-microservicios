@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,8 +31,7 @@ import com.microservice.producto_service.feignClient.InventarioResponseDTO;
 import com.microservice.producto_service.model.Producto;
 import com.microservice.producto_service.repository.ProductoRepository;
 import com.microservice.producto_service.service.ProductoService;
-
-
+import com.microservice.producto_service.validation.ProductoValidator;
 
 @ExtendWith(MockitoExtension.class)
 class ProductoServiceTest {
@@ -41,6 +41,9 @@ class ProductoServiceTest {
 
     @Mock
     private InventarioClient inventarioClient;
+
+    @Mock
+    private ProductoValidator productoValidator;
 
     @InjectMocks
     private ProductoService service;
@@ -86,6 +89,8 @@ class ProductoServiceTest {
     void crear_conPrecioInvalido_deberiaLanzarExcepcion() {
         // Preparar
         requestDTO.setPrecioBase(0.0); // Precio inválido
+        doThrow(new ProductoValidacionException("El precio base debe ser mayor a 0."))
+            .when(productoValidator).validarPrecioBase(0.0);
 
         // Actuar y Afirmar
         ProductoValidacionException exception = assertThrows(
@@ -100,6 +105,8 @@ class ProductoServiceTest {
     void crear_conSkuDuplicado_deberiaLanzarExcepcion() {
         // Preparar
         when(repository.existsByCodigo(requestDTO.getCodigo())).thenReturn(true);
+        doThrow(new SkuDuplicadoException("Ya existe un producto con el SKU: SKU123"))
+            .when(productoValidator).validarCodigoDuplicado(true, "SKU123");
 
         // Actuar y Afirmar
         assertThrows(SkuDuplicadoException.class, () -> service.crear(requestDTO));
