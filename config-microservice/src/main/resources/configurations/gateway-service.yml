@@ -1,0 +1,75 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: producto-service
+              uri: lb://PRODUCTO-SERVICE
+              predicates:
+                - Path=/api/productos, /api/productos/**
+              filters:
+                - AddRequestHeader=X-Request-Source, gateway-service
+
+            - id: inventario-service
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/api/inventarios, /api/inventarios/**
+              filters:
+                - AddRequestHeader=X-Request-Source, gateway-service
+
+            - id: bodega-service
+              uri: lb://BODEGA-SERVICE
+              predicates:
+                - Path=/api/bodegas, /api/bodegas/**
+              filters:
+                - AddRequestHeader=X-Request-Source, gateway-service
+
+            - id: abastecimiento-service
+              uri: lb://ABASTECIMIENTO-SERVICE
+              predicates:
+                - Path=/api/abastecimiento, /api/abastecimiento/**, /api/abastecimientos, /api/abastecimientos/**
+              filters:
+                - AddRequestHeader=X-Request-Source, gateway-service
+
+            - id: movimiento-service
+              uri: lb://MOVIMIENTO-SERVICE
+              predicates:
+                - Path=/api/movimientos, /api/movimientos/**
+              filters:
+                - AddRequestHeader=X-Request-Source, gateway-service
+
+            - id: proveedor-service
+              uri: lb://PROVEEDOR-SERVICE
+              predicates:
+                - Path=/api/proveedores, /api/proveedores/**
+              filters:
+                - AddRequestHeader=X-Request-Source, gateway-service
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Productos
+        url: /producto-service/v3/api-docs
+      - name: Inventarios
+        url: /inventario-service/v3/api-docs
+      - name: Bodegas
+        url: /bodega-service/v3/api-docs
+      - name: Abastecimientos
+        url: /abastecimiento-service/v3/api-docs
+      - name: Movimientos
+        url: /movimiento-service/v3/api-docs
+      - name: Proveedores
+        url: /proveedor-service/v3/api-docs
